@@ -184,6 +184,27 @@ def is_valid_ip(ip):
         return False
 
 
+def check_dot_env():
+    # Check if '.env' file exists
+    if not os.path.exists('.env'):
+        # If '.env' does not exist, check if '.env_template' exists
+        if os.path.exists('.env_template'):
+            # Read content from '.env_template'
+            with open('.env_template', 'r') as template_file:
+                template_content = template_file.read()
+
+            # Write content to '.env'
+            with open('.env', 'w') as env_file:
+                env_file.write(template_content)
+
+            print("'.env' file created from '.env_template'.")
+        else:
+            print("'.env_template' file does not exist. Cannot create '.env' file.")
+    else:
+        print("'.env' file already exists.")
+
+
+check_dot_env()
 download_yolov3_weights()
 esp32_cam_ip = config('ESP32_CAM_IP')
 if not is_valid_ip(esp32_cam_ip):

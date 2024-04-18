@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.10 (teresa-bot)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (esp32-cam-yolo) (3)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (esp32-cam-yolo)" project-jdk-type="Python SDK" />
 </project>
