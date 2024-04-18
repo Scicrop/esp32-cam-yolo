@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "py_esp32_cam_yolo3"
+version = "0.1.0"
+description = ""
+authors = ["Jose Damico <jose.damico@scicrop.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+opencv-python = "4.7.0.68"
+python-decouple = "^3.8"
+requests = "^2.31.0"
+pyserial = "^3.5"
+tk = "^0.1.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
