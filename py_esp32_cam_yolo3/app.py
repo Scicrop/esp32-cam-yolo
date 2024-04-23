@@ -18,22 +18,24 @@ from tkinter import ttk
 
 
 def yolo_detect(host):
-    url_str = 'http://' + host + '/cam-lo.jpg'
+    loop = True
+    url_str = ''
     cap = None
     try:
+        url_str = 'http://' + host + '/cam-lo.jpg'
         cap = cv2.VideoCapture(url_str)
     except:
         show_alert("Camera connection failed.", "Exit")
+        loop = False
         sys.exit()
     whT = 320
-
     model_config = 'yolov3.cfg'
     model_weights = 'yolov3.weights'
     net = cv2.dnn.readNetFromDarknet(model_config, model_weights)
     net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
     net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
-    while True:
+    while loop:
         try:
             img_resp = None
             imgnp = None
@@ -42,6 +44,7 @@ def yolo_detect(host):
                 imgnp = np.array(bytearray(img_resp.read()), dtype=np.uint8)
             except:
                 show_alert("Camera connection failed.", "Exit")
+                loop = False
                 sys.exit()
             im = cv2.imdecode(imgnp, -1)
             success, img = cap.read()
@@ -54,7 +57,15 @@ def yolo_detect(host):
             find_object(outputs, im)
 
             cv2.imshow('Realtime detection screen', im)
-            cv2.waitKey(1)
+            key = cv2.waitKey(1)
+
+            # Check if the user pressed any key
+            if key != -1:
+                print(f"Key pressed: {key}")
+                # Close the window
+                cv2.destroyAllWindows()
+                loop = False
+                sys.exit()
         except:
             pass
 
