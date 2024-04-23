@@ -1,5 +1,7 @@
+import platform
 import re
 import sys
+import tempfile
 import threading
 import time
 from urllib.parse import urlparse
@@ -8,7 +10,7 @@ import cv2
 import numpy as np
 import urllib.request
 import os
-from decouple import config
+from decouple import config, Config, RepositoryEnv
 import requests
 import serial.tools.list_ports
 import tkinter as tk
@@ -17,7 +19,12 @@ from tkinter import ttk
 
 def yolo_detect(host):
     url_str = 'http://' + host + '/cam-lo.jpg'
-    cap = cv2.VideoCapture(url_str)
+    cap = None
+    try:
+        cap = cv2.VideoCapture(url_str)
+    except:
+        show_alert("Camera connection failed.", "Exit")
+        sys.exit()
     whT = 320
 
     model_config = 'yolov3.cfg'
@@ -28,19 +35,23 @@ def yolo_detect(host):
 
     while True:
         try:
-            img_resp = urllib.request.urlopen(url_str)
-            imgnp = np.array(bytearray(img_resp.read()), dtype=np.uint8)
+            img_resp = None
+            imgnp = None
+            try:
+                img_resp = urllib.request.urlopen(url_str)
+                imgnp = np.array(bytearray(img_resp.read()), dtype=np.uint8)
+            except:
+                show_alert("Camera connection failed.", "Exit")
+                sys.exit()
             im = cv2.imdecode(imgnp, -1)
             success, img = cap.read()
             blob = cv2.dnn.blobFromImage(im, 1 / 255, (whT, whT), [0, 0, 0], 1, crop=False)
             net.setInput(blob)
             layer_names = net.getLayerNames()
 
-
             output_names = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
             outputs = net.forward(output_names)
             find_object(outputs, im)
-
 
             cv2.imshow('Realtime detection screen', im)
             cv2.waitKey(1)
@@ -50,23 +61,34 @@ def yolo_detect(host):
 
 def read_serial_output(serial_port):
     env_file = '.env'
-    show_alert("Getting Camera IP Address...")
+    show_alert("Getting Camera IP Address...", "Continue...")
     host = None
-    with serial.Serial(serial_port, baudrate=9600, timeout=1) as ser:
+    with serial.Serial(serial_port, baudrate=115200, timeout=1) as ser:
         ser.setDTR(False)
         ser.setRTS(False)
         read = True
+        counter = 0
         while read:
+            counter = counter + 1
+            print(counter)
             try:
                 line = ser.readline().decode().strip()
                 if line:
                     urls_found = re.findall(r'(https?://\S+)', line)
-                    for url in urls_found:
-                        host = urlparse(url).hostname
-                        set_key(env_file, "ESP32_CAM_IP", host)
-                        show_alert("Camera IP Address: " + host)
+                    if len(urls_found) > 0:
+                        for url in urls_found:
+                            host = urlparse(url).hostname
+                            set_key(env_file, "ESP32_CAM_IP", host)
+                            show_alert("Camera IP Address: " + host, "Continue...")
+                            read = False
+                            break
+                    elif "SoftAP" in line:
+                        show_alert(
+                            "You need to configure the WiFi connection of your camera.\nConnect into SCICROP network "
+                            "and enter in http://192.168.4.1 to configure.\nThen run this program again.", "Exit")
                         read = False
-                        break
+                        sys.exit()
+
             except:
                 pass
     yolo_detect(host)
@@ -89,9 +111,9 @@ def select_serial_port():
 
 def download_yolov3_weights():
     if not os.path.exists('yolov3.weights'):
-        yolo3_weights_url = config('YOLO3_WEIGHTS')
+        yolo3_weights_url = get_config('YOLO3_WEIGHTS')
         if yolo3_weights_url:
-            show_alert("Preparing AI detection data, it can take a while.")
+            show_alert("Preparing AI detection data, it can take a while (1-5min).", "Continue...")
             response = requests.get(yolo3_weights_url)
             if response.status_code == 200:
                 with open('yolov3.weights', 'wb') as f:
@@ -111,9 +133,8 @@ def save_detected_image(detected_object, i, obj_class):
     cv2.imwrite(f"{sys.path[0]}/detected_files/{file_name}", detected_object)
 
 
-
 def find_object(outputs, im):
-    pref_class = config('PREF_CLASS')
+    pref_class = get_config('PREF_CLASS')
     conf_threshold = 0.5
     nms_threshold = 0.3
     classes_file = 'coco.names'
@@ -140,7 +161,7 @@ def find_object(outputs, im):
     for i in indices:
         box = bbox[i]
         x, y, w, h = box[0], box[1], box[2], box[3]
-        #print(class_names[class_ids[i]])
+        # print(class_names[class_ids[i]])
         if class_names[class_ids[i]] == pref_class:
             detected_object = im[y:y + h, x:x + w]
             thread = threading.Thread(target=save_detected_image, args=(detected_object, i, pref_class))
@@ -151,7 +172,7 @@ def find_object(outputs, im):
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 255), 2)
 
 
-def show_alert(message):
+def show_alert(message, button_label):
     alert_window = tk.Tk()
     alert_window.title("Message")
 
@@ -164,7 +185,7 @@ def show_alert(message):
         alert_window.destroy()
 
     # Create an "OK" button to close the window
-    btn_ok = tk.Button(alert_window, text="Click here to continue...", command=close_window)
+    btn_ok = tk.Button(alert_window, text=button_label, command=close_window)
     btn_ok.pack(pady=10)
     alert_window.mainloop()
 
@@ -184,17 +205,25 @@ def is_valid_ip(ip):
         return False
 
 
+def is_windows():
+    return platform.system().lower() == "windows"
+
+
 def check_dot_env():
+    env_dest = '.env'
+    template_content = ''
+    if is_windows():
+        temp_folder = tempfile.gettempdir()
+        env_dest = temp_folder + '\\' + env_dest
     # Check if '.env' file exists
-    if not os.path.exists('.env'):
+    if not os.path.exists(env_dest):
         # If '.env' does not exist, check if '.env_template' exists
         if os.path.exists('.env_template'):
             # Read content from '.env_template'
             with open('.env_template', 'r') as template_file:
                 template_content = template_file.read()
 
-            # Write content to '.env'
-            with open('.env', 'w') as env_file:
+            with open(env_dest, 'w') as env_file:
                 env_file.write(template_content)
 
             print("'.env' file created from '.env_template'.")
@@ -204,17 +233,30 @@ def check_dot_env():
         print("'.env' file already exists.")
 
 
+def get_config(key):
+    dotenv_path = ".env"
+    if is_windows():
+        temp_folder = tempfile.gettempdir()
+        dotenv_path = f"{temp_folder}/.env"
+    my_config = Config(RepositoryEnv(dotenv_path))
+    return my_config(key)
+
+
 check_dot_env()
 download_yolov3_weights()
-esp32_cam_ip = config('ESP32_CAM_IP')
+esp32_cam_ip = get_config('ESP32_CAM_IP')
 if not is_valid_ip(esp32_cam_ip):
-    window = tk.Tk()
-    window.title("Select your serial port")
     available_ports = list_serial_ports()
-    combo_ports = ttk.Combobox(window, values=available_ports)
-    combo_ports.grid(row=0, column=0, padx=10, pady=10)
-    btn_select = ttk.Button(window, text="Choose", command=select_serial_port)
-    btn_select.grid(row=0, column=1, padx=10, pady=10)
-    window.mainloop()
+    if len(available_ports) > 0:
+        window = tk.Tk()
+        window.title("Select your serial port")
+        combo_ports = ttk.Combobox(window, values=available_ports)
+        combo_ports.grid(row=0, column=0, padx=10, pady=10)
+        btn_select = ttk.Button(window, text="Choose", command=select_serial_port)
+        btn_select.grid(row=0, column=1, padx=10, pady=10)
+        window.mainloop()
+    else:
+        show_alert("No serial port found. Please check:\n1) Is your camera connect with USB cable?\n2) Did you "
+                   "installed the USB-Serial driver?", "Exit")
 else:
     yolo_detect(esp32_cam_ip)

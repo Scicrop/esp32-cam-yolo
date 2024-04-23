@@ -35,6 +35,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "C:\Users\info\git\esp32-cam-yolo\dist\app.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\info\git\esp32-cam-yolo\dist\.env_template"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\info\git\esp32-cam-yolo\dist\CH341SER.EXE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\info\git\esp32-cam-yolo\dist\yolov3.cfg"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\info\git\esp32-cam-yolo\dist\coco.names"; DestDir: "{app}"; Flags: ignoreversion
 
 
 [Icons]
