@@ -3,7 +3,7 @@ Objects and Animals detection with Wifi camera and Yolo
 
 ## Linux Installatiion
 
-Check your *poetry* version, it needs to >= 1.82
+Check your *poetry* version, it needs to be >= 1.82
 
 `poetry --version`
 
