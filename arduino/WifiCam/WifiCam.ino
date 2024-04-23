@@ -33,8 +33,7 @@ serveJpg() //capture image .jpg
     server.send(503, "", "");
     return;
   }
-  Serial.printf("CAPTURE OK %dx%d %db\n", frame->getWidth(), frame->getHeight(),
-                static_cast<int>(frame->size()));
+  //Serial.printf("CAPTURE OK %dx%d %db\n", frame->getWidth(), frame->getHeight(), static_cast<int>(frame->size()));
 
   server.setContentLength(frame->size());
   server.send(200, "image/jpeg");
@@ -289,7 +288,7 @@ void setup()
 
   Serial.println();
   Serial.println("Waiting.");
-
+/*
   while(counter < 10){
     digitalWrite(ledPin, HIGH);
     delay(30);
@@ -298,6 +297,7 @@ void setup()
     counter++;
   }
   counter = 0;
+*/  
   while ((WiFi.status() != WL_CONNECTED)){
     delay(100);
     server.handleClient();
@@ -306,23 +306,22 @@ void setup()
 }
 
 void loop(){
-
-  while(counter < 10){
+  digitalWrite(ledPin, LOW);
+  while(counter < 10 || reset >= 5){
     buttonState = digitalRead(wifiBtn);
     Serial.println(buttonState);
     if (buttonState == HIGH) {
+      buttonState = LOW;
       reset++;
-      digitalWrite(ledPin, HIGH);
       Serial.println("high.");
     } else {
-      digitalWrite(ledPin, LOW);
       Serial.println("low.");
     }
     delay(1000);
     counter++;
   }
 
-  if(reset >= 4){
+  if(reset >= 5){
     digitalWrite(ledPin, HIGH);
     Serial.println("clearing eeprom");
     for (int i = 0; i < 96; ++i) {
@@ -332,6 +331,6 @@ void loop(){
     ESP.restart();
   }else{
     server.handleClient();
-    digitalWrite(ledPin, LOW);
+    //digitalWrite(ledPin, LOW);
   }
 }
