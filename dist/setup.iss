@@ -34,10 +34,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "C:\Users\info\git\esp32-cam-yolo\dist\app.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\info\git\esp32-cam-yolo\dist\.env_template"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\info\git\esp32-cam-yolo\dist\CH341SER.EXE"; DestDir: "{app}"; Flags: ignoreversion
+
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
+Filename: "{app}\CH341SER.EXE"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
