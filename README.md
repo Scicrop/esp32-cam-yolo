@@ -1,7 +1,7 @@
 # esp32-cam-yolo
 Objects and Animals detection with Wifi camera and Yolo
 
-## Linux Installatiion
+## Linux Installation
 
 Check your *poetry* version, it needs to be >= 1.82
 
