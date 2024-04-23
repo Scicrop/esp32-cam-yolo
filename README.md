@@ -23,3 +23,11 @@ cp .env_template .env
 poetry run python app.py
 
 ```
+## Windows 11 Installation
+- Install Python 3.12
+- Install Poetry
+
+## Windows 11 Packaging
+- Run `poetry.exe run build`
+- Install Inno Setup
+- Build setup application with Inno Setup, using dist/setup.iss file
