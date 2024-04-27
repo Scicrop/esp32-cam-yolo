@@ -22,7 +22,8 @@ def yolo_detect(host):
     url_str = ''
     cap = None
     try:
-        url_str = 'http://' + host + '/cam-lo.jpg'
+        #url_str = 'http://' + host + '/cam-lo.jpg'
+        url_str = 'http://' + host + '/cam-hi.jpg'
         cap = cv2.VideoCapture(url_str)
     except:
         show_alert("Camera connection failed.", "Exit")

@@ -307,18 +307,22 @@ void setup()
 
 void loop(){
   digitalWrite(ledPin, LOW);
-  while(counter < 10 || reset >= 5){
+  while(counter < 8){
     buttonState = digitalRead(wifiBtn);
     Serial.println(buttonState);
     if (buttonState == HIGH) {
       buttonState = LOW;
       reset++;
+      if(reset >= 5) break;
       Serial.println("high.");
     } else {
       Serial.println("low.");
     }
     delay(1000);
+    Serial.print("Counter: ");
+    Serial.println(counter);
     counter++;
+
   }
 
   if(reset >= 5){
