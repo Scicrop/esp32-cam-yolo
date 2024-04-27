@@ -33,3 +33,8 @@ poetry run python app.py
 - Run `poetry.exe run build`
 - Install Inno Setup
 - Build setup application with Inno Setup, using dist/setup.iss file
+
+## Results
+https://github.com/Scicrop/esp32-cam-yolo/assets/692043/433036f7-b282-4ae5-81f0-fcfb3fb30fed
+
+
