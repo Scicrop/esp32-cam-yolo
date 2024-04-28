@@ -1,5 +1,5 @@
 #define MyAppName "esp32-cam-yolo"
-#define MyAppVersion "0.0.1"
+#define MyAppVersion "0.0.3"
 #define MyAppPublisher "SciCrop"
 #define MyAppURL "https://github.com/Scicrop/esp32-cam-yolo"
 #define MyAppExeName "esp32-cam-yolo.exe"

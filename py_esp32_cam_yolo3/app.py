@@ -31,7 +31,12 @@ def yolo_detect(host):
         sys.exit()
     whT = 320
     model_config = 'yolov3.cfg'
-    model_weights = 'yolov3.weights'
+
+    model_weights = "yolov3.weights"
+    if is_windows():
+        temp_folder = tempfile.gettempdir()
+        model_weights = temp_folder + '\\' + model_weights
+
     net = cv2.dnn.readNetFromDarknet(model_config, model_weights)
     net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
     net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
@@ -122,15 +127,19 @@ def select_serial_port():
 
 
 def download_yolov3_weights():
-    if not os.path.exists('yolov3.weights'):
+    yolov3_weights_path = "yolov3.weights"
+    if is_windows():
+        temp_folder = tempfile.gettempdir()
+        yolov3_weights_path = temp_folder + '\\' + yolov3_weights_path
+    if not os.path.exists(yolov3_weights_path):
         yolo3_weights_url = get_config('YOLO3_WEIGHTS')
         if yolo3_weights_url:
             show_alert("Preparing AI detection data, it can take a while (1-5min).", "Continue...")
             response = requests.get(yolo3_weights_url)
             if response.status_code == 200:
-                with open('yolov3.weights', 'wb') as f:
+                with open(yolov3_weights_path, 'wb') as f:
                     f.write(response.content)
-                print("yolov3.weights file downloaded and saved in the project root.")
+                show_alert("yolov3.weights file downloaded and saved in: "+yolov3_weights_path, "Continue...")
             else:
                 print("Error downloading the yolov3.weights file.")
         else:
