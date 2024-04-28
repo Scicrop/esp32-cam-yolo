@@ -40,9 +40,8 @@ Source: "C:\Users\info\git\esp32-cam-yolo\dist\coco.names"; DestDir: "{app}"; Fl
 
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\app.exe"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\app.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\CH341SER.EXE"; Description: "Install USB Camera Driver"; Flags: nowait postinstall
-Filename: "{app}\app.exe"; Description: "Run Detection Application"; Flags: postinstall
