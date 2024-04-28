@@ -48,4 +48,8 @@ poetry run python app.py
 ## Results
 https://github.com/Scicrop/esp32-cam-yolo/assets/692043/433036f7-b282-4ae5-81f0-fcfb3fb30fed
 
+## Hardware
+![image](https://github.com/Scicrop/esp32-cam-yolo/assets/692043/2115f3af-82fe-458a-bf19-e8eb6da0e8e5)
+
+
 
