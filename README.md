@@ -49,7 +49,17 @@ poetry run python app.py
 https://github.com/Scicrop/esp32-cam-yolo/assets/692043/433036f7-b282-4ae5-81f0-fcfb3fb30fed
 
 ## Hardware
+### Board
 ![image](https://github.com/Scicrop/esp32-cam-yolo/assets/692043/2115f3af-82fe-458a-bf19-e8eb6da0e8e5)
+![image](https://github.com/Scicrop/esp32-cam-yolo/assets/692043/f60e57cf-9acc-4b5f-a86c-bc367ac9278c)
+
+## 3D Printed Case
+![image](https://github.com/Scicrop/esp32-cam-yolo/assets/692043/68cb5cb0-ef34-4b44-8961-695b85a39047)
+![image](https://github.com/Scicrop/esp32-cam-yolo/assets/692043/227d33fa-5eef-4347-b15c-bcb761ebaddd)
+
+STL files can be found here: https://www.printables.com/model/75024-esp32-cam-case
+
+
 
 
 
